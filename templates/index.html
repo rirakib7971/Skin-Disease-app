@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Dermatology Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            color: #1a1a1a;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 50px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            max-width: 650px;
+            width: 90%;
+            margin-top: 5vh;
+            margin-bottom: 5vh;
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 15px;
+            font-weight: 300;
+        }
+
+        .upload-area {
+            border: 2px dashed #cccccc;
+            border-radius: 8px;
+            padding: 40px 20px;
+            background-color: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #111111;
+            background-color: #f0f0f0;
+        }
+
+        .upload-area input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: #444;
+            font-weight: 400;
+        }
+
+        .upload-text span {
+            display: block;
+            font-size: 13px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* Dropdown Styling */
+        .select-wrapper {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .select-wrapper label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #fff;
+            color: #111;
+            cursor: pointer;
+            appearance: none; /* Removes default arrow */
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23111111%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #111;
+        }
+
+        button {
+            background-color: #111111;
+            color: #ffffff;
+            border: none;
+            padding: 14px 35px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, transform 0.1s;
+            width: 100%;
+        }
+
+        button:hover { background-color: #333333; }
+        button:active { transform: scale(0.98); }
+
+        .loader-container {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #111111;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 14px;
+            color: #555;
+            font-weight: 600;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .results-wrapper {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 30px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        img.preview {
+            max-width: 250px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            border: 3px solid #fff;
+        }
+
+        .result-box {
+            padding: 18px 20px;
+            border-left: 5px solid #111111;
+            background-color: #f9f9f9;
+            border-radius: 0 6px 6px 0;
+            text-align: left;
+        }
+
+        .result-title {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 17px;
+            color: #111;
+            font-weight: 600;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>AI Dermatology Dashboard</h1>
+        <p class="subtitle">Secure dual-architecture analysis for dermoscopic imagery.</p>
+        
+        <form id="uploadForm" action="/predict" method="post" enctype="multipart/form-data">
+            
+            <div class="upload-area" id="dropzone">
+                <input type="file" name="file" id="fileInput" accept="image/*" required>
+                <div class="upload-text" id="fileName">
+                    <strong>Click to browse</strong> or drag an image here
+                    <span>Supported formats: JPG, PNG, JPEG</span>
+                </div>
+            </div>
+
+            <div class="select-wrapper">
+                <label for="model_choice">Select Diagnostic Model:</label>
+                <select name="model_choice" id="model_choice" required>
+                    <option value="cnn">Lightweight CNN (MobileNetV2)</option>
+                    <option value="vit">Vision Transformer (ViT-B/16)</option>
+                </select>
+            </div>
+            
+            <button type="submit" id="submitBtn">Analyze Lesion</button>
+            
+            <div class="loader-container" id="loader">
+                <div class="loader"></div>
+                <div class="loader-text">AI is analyzing the lesion...</div>
+            </div>
+        </form>
+        
+        {% if uploaded_image %}
+        <div class="results-wrapper">
+            <img src="{{ uploaded_image }}" alt="Uploaded Lesion" class="preview">
+            
+            <div class="result-box">
+                <span class="result-title">Analysis via {{ model_used }}</span>
+                <span class="result-value">{{ result }}</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileName');
+        const uploadForm = document.getElementById('uploadForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const name = e.target.files[0].name;
+                fileNameDisplay.innerHTML = `<strong style="color: #111;">Selected:</strong> ${name}`;
+            }
+        });
+
+        uploadForm.addEventListener('submit', function() {
+            if (fileInput.files.length > 0) {
+                submitBtn.style.display = 'none';
+                loader.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>
